@@ -49,8 +49,10 @@ def compute_grads(w,b,n,x,y,C):
 # 	w_updated = w + (newAlphai - alpha[i]) * y * (x.T)
 # 	b_updated = b + (newAlphai - alpha[i]) * y
 # 	return newAlphai,w_updated,b_updated
-
+featuresPrecomputed={}
 def features_for_one(X):
+	if (tuple(X) in featuresPrecomputed.keys()): return featuresPrecomputed[tuple(X)]
+
 	X[X==0]=-1
 	features_length = X.shape[0]
 	for i in range(features_length):
@@ -77,7 +79,8 @@ def features_for_one(X):
 				else:
 					q3 = X[i]
 				features.append(q1*q2*q3)
-	return np.array(features)	
+	featuresPrecomputed[tuple(X)]=features
+	return featuresPrecomputed[tuple(X)] #np.array(features)	
 ################################
 # Non Editable Region Starting #
 ################################
