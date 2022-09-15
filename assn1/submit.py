@@ -148,7 +148,7 @@ def solver( X, y, timeout, spacing ):
 		sqPrecomputed.append( X_new[i].dot (X_new[i]))
 
 	C=10
-	alphas = C*np.ones(n)
+	alphas = C*np.random.randn(n)
 
 	W=  np.sum ((X_new.T * (alphas.T * y_new).T ).T, axis=0)
 
