@@ -20,8 +20,8 @@ import time as tm
 # For example, functions to calculate next coordinate or step length
 
 ep = 1e-10
-def optimCordinate(i, X_new, y_new,W, alphas,C):
-	alNew= (1- y_new[i]*X_new[i].dot(W) + alphas[i]*X_new[i].dot(X_new[i]))/(np.dot(X_new[i],X_new[i]))
+def optimCordinate(i, X_new, y_new,W, alphas,C, sq):
+	alNew= (1- y_new[i]*X_new[i].dot(W) + alphas[i]*sq[i])/(sq[i])
 	if(alNew>C):
 		alNew=C
 	if(alNew<0):
@@ -143,6 +143,9 @@ def solver( X, y, timeout, spacing ):
 	perm = np.random.permutation(n)
 	X_new = get_features(X)
 	y_new = get_renamed_labels(y)
+	sqPrecomputed = []
+	for i in range (n):
+		sqPrecomputed.append( X_new[i].dot (X_new[i]))
 
 	C=10
 	alphas = C*np.ones(n)
@@ -184,7 +187,7 @@ def solver( X, y, timeout, spacing ):
 		# In this scheme, W, B play the role of the "cumulative" variables in the course module optLib (see the cs771 library)
 		# W_run, B_run on the other hand, play the role of the "theta" variable in the course module optLib (see the cs771 library)
 		i=perm[counter]
-		W,alphas[i]=optimCordinate(i, X_new, y_new,W, alphas,C)
+		W,alphas[i]=optimCordinate(i, X_new, y_new,W, alphas,C, sqPrecomputed)
 		counter+=1
 		if(counter==n):
 			counter=0
