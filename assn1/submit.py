@@ -70,14 +70,14 @@ def features_for_one(X):
 					q1 = 1
 				else:
 					q1 = X[i]
-				if(i == features_length):
+				if(j == features_length):
 					q2 = 1
 				else:
-					q2 = X[i]
-				if(i == features_length):
+					q2 = X[j]
+				if(k == features_length):
 					q3 = 1
 				else:
-					q3 = X[i]
+					q3 = X[k]
 				features.append(q1*q2*q3)
 	featuresPrecomputed[tuple(X)]=features
 	return featuresPrecomputed[tuple(X)] #np.array(features)	
