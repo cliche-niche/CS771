@@ -138,7 +138,7 @@ def solver( X, y, timeout, spacing ):
 
 	# You may reinitialize W, B to your liking here e.g. set W to its correct dimensionality
 	# You may also define new variables here e.g. step_length, mini-batch size etc
-	W= np.zeros((int)(d*(d-1)*(d+1)/6 + d*(d+1) +d) + 1)
+	# W= np.zeros((int)(d*(d-1)*(d+1)/6 + d*(d+1) +d) + 1)
 	counter=0
 	perm = np.random.permutation(n)
 	X_new = get_features(X)
@@ -147,10 +147,11 @@ def solver( X, y, timeout, spacing ):
 	for i in range (n):
 		sqPrecomputed.append( X_new[i].dot (X_new[i]))
 
-	C=10
-	alphas = C*np.random.rand(n)
+	C=100
+	alphas = 0.0001*np.random.rand(n)
 
-	W=  np.sum ((X_new.T * (alphas.T * y_new).T ).T, axis=0)
+	W_r=  np.sum ((X_new.T * (alphas.T * y_new).T ).T, axis=0)
+	W= 10*W_r
 
 ################################
 # Non Editable Region Starting #
@@ -187,7 +188,8 @@ def solver( X, y, timeout, spacing ):
 		# In this scheme, W, B play the role of the "cumulative" variables in the course module optLib (see the cs771 library)
 		# W_run, B_run on the other hand, play the role of the "theta" variable in the course module optLib (see the cs771 library)
 		i=perm[counter]
-		W,alphas[i]=optimCordinate(i, X_new, y_new,W, alphas,C, sqPrecomputed)
+		W_r,alphas[i]=optimCordinate(i, X_new, y_new,W_r, alphas,C, sqPrecomputed)
+		W= 10*W_r
 		counter+=1
 		if(counter==n):
 			counter=0
