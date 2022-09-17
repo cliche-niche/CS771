@@ -117,14 +117,44 @@ def solver( X, y, timeout, spacing ):
     # You may also define new variables here e.g. step_length, mini-batch size etc
     # W= np.zeros((int)(d*(d-1)*(d+1)/6 + d*(d+1) +d) + 1)
     counter=0
-    perm = np.random.permutation(n)
     X_new = get_features(X)
     y_new = get_renamed_labels(y)
 
     C = 10000
-    alphas = 0.0001*np.random.rand(n)
+    isConsistent=1
+    res={}
+    resX={}
+    indices =0
+    X_f=[]
+    y_f=[]
 
-    W_r=  np.sum ((X_new.T * (alphas.T * y_new).T ).T, axis=0)
+    for i in range(n):
+        if(tuple(X_new[i]) in res.keys()): 
+            if (res[tuple(X_new[i])]==y_new[i]):continue  #assert(res[tuple(X_new[i])]== y_new[i])
+            else: 
+                C=100
+                isConsistent=0
+                break
+        else :
+            res[tuple(X_new[i])]= y_new[i]
+            indices+=1
+            X_f.append(X_new[i])
+            y_f.append(y_new[i])
+    
+    if(isConsistent):
+        perm = np.random.permutation(indices)
+        X_f = np.array(X_f)
+        y_f = np.array(y_f)
+    else:
+        indices=n
+        perm = np.random.permutation(n)
+        X_f = X_new
+        y_f = y_new
+
+    
+    alphas = 0.0001*np.random.rand(indices)
+
+    W_r=  np.sum ((X_f.T * (alphas.T * y_f).T ).T, axis=0)
     W= 10*W_r
 
 ################################
@@ -162,10 +192,10 @@ def solver( X, y, timeout, spacing ):
         # In this scheme, W, B play the role of the "cumulative" variables in the course module optLib (see the cs771 library)
         # W_run, B_run on the other hand, play the role of the "theta" variable in the course module optLib (see the cs771 library)
         i=perm[counter]
-        W_r,alphas[i]=optimCordinate(i, X_new, y_new,W_r, alphas,C)
+        W_r,alphas[i]=optimCordinate(i, X_f, y_f,W_r, alphas,C)
         W= 10*W_r
         counter+=1
-        if(counter==n):
+        if(counter==indices):
             counter=0
-            perm = np.random.permutation(n)
+            perm = np.random.permutation(indices)
     return ( W.reshape( ( W.size, ) ), B, totTime )			# This return statement will never be reached
