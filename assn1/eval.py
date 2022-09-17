@@ -27,7 +27,7 @@ Z_tst = np.loadtxt( "secret_test.dat" )
 num_trials = 5
 
 # Try various timeouts - the timeouts are in seconds
-timeouts = np.array( [ 0.2, 0.5, 0, 0, 0 ] )
+timeouts = np.array( [ 0.2, 0.5, 1, 2, 5 ] )
 
 # Try checking for timeout every 10 iterations
 spacing = 10
