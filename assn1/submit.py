@@ -1,4 +1,5 @@
 import numpy as np
+import pandas
 # This is the only scipy method you are allowed to use
 # Use of scipy is not allowed otherwise
 from scipy.linalg import khatri_rao
@@ -32,6 +33,14 @@ def optimCordinate(i, X_new, y_new,W, alphas,C):
     return W_new, alNew
 
 featuresPrecomputed={}
+forward={}
+
+def base2 (a):
+    b =0
+    for x in a:
+        b*=2 
+        b+x
+    return b
 
 def features_for_one(X):
     if (tuple(X) in featuresPrecomputed.keys()): return featuresPrecomputed[tuple(X)]
@@ -45,7 +54,8 @@ def features_for_one(X):
     features = [ (X_new[i] if i != fl else 1) * (X_new[j] if j != fl else 1) * (X_new[k] if k != fl else 1) for i in range(fl+1) for j in range(i, fl+1) for k in range(j, fl+1)]
     
     featuresPrecomputed[tuple(X)]=features
-    return featuresPrecomputed[tuple(X)] 
+    # forward[tuple(X)]=base2(X)
+    return features
 
 ################################
 # Non Editable Region Starting #
@@ -120,42 +130,46 @@ def solver( X, y, timeout, spacing ):
     X_new = get_features(X)
     y_new = get_renamed_labels(y)
 
-    C = 10000
-    isConsistent=1
-    res={}
-    resX={}
-    indices =0
-    X_f=[]
-    y_f=[]
+    
+    # print((tm.perf_counter()- tic +0.0))
 
-    for i in range(n):
-        if(tuple(X_new[i]) in res.keys()): 
-            if (res[tuple(X_new[i])]==y_new[i]):continue  #assert(res[tuple(X_new[i])]== y_new[i])
-            else: 
-                C=100
-                isConsistent=0
-                break
-        else :
-            res[tuple(X_new[i])]= y_new[i]
-            indices+=1
-            X_f.append(X_new[i])
-            y_f.append(y_new[i])
+    C = 1e10
+    XY= np.concatenate((X, y.reshape((y.size,1))), axis=1)
+
+    # print((tm.perf_counter()- tic +0.0))
+
+    XY_unique = np.unique(XY, axis=0)
+    # print((tm.perf_counter()- tic +0.0))
+
+    # print(XY_unique.shape)
+    # X_unique = np.unique(X_new,axis=0)
+    # print(X_unique.shape[0])
+    isConsistent= 1 #(XY_unique.shape[0] == X_unique.shape[0])
+    # print(isConsistent)
+    
+
     
     if(isConsistent):
+        indices= XY_unique.shape[0]
         perm = np.random.permutation(indices)
-        X_f = np.array(X_f)
-        y_f = np.array(y_f)
+        X_f = get_features(XY_unique[: , :-1])
+        y_f = get_renamed_labels( XY_unique[: , -1])
+        # print(y_f.shape)
     else:
+        C=100
         indices=n
         perm = np.random.permutation(n)
         X_f = X_new
         y_f = y_new
 
     
-    alphas = 0.0001*np.random.rand(indices)
+    alphas = np.random.randn(indices)
+    # print(len(alphas))
 
     W_r=  np.sum ((X_f.T * (alphas.T * y_f).T ).T, axis=0)
     W= 10*W_r
+    # print((tm.perf_counter()- tic +0.0))
+
 
 ################################
 # Non Editable Region Starting #
@@ -192,6 +206,7 @@ def solver( X, y, timeout, spacing ):
         # In this scheme, W, B play the role of the "cumulative" variables in the course module optLib (see the cs771 library)
         # W_run, B_run on the other hand, play the role of the "theta" variable in the course module optLib (see the cs771 library)
         i=perm[counter]
+
         W_r,alphas[i]=optimCordinate(i, X_f, y_f,W_r, alphas,C)
         W= 10*W_r
         counter+=1
