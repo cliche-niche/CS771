@@ -1,5 +1,4 @@
 import numpy as np
-import pandas
 # This is the only scipy method you are allowed to use
 # Use of scipy is not allowed otherwise
 from scipy.linalg import khatri_rao
@@ -23,29 +22,21 @@ import time as tm
 ep = 1e-10
 def optimCordinate(i, X_new, y_new,W, alphas,C):
     sq = 165 # ||X_new||^2 = 165
-    alNew = (1- y_new[i]*X_new[i].dot(W) + alphas[i]*sq)/sq
-    if(alNew>C):
-        alNew=C
-    if(alNew<0):
-        alNew=0
+    alNew = (1 - y_new[i] * X_new[i].dot(W) + alphas[i]*sq)/sq
+    if(alNew > C):
+        alNew = C
+    if(alNew < 0):
+        alNew = 0
 
-    W_new = W + y_new[i]*(alNew- alphas[i])*X_new[i]
+    W_new = W + y_new[i] * (alNew - alphas[i]) * X_new[i]
     return W_new, alNew
 
-featuresPrecomputed={}
-forward={}
-
-def base2 (a):
-    b =0
-    for x in a:
-        b*=2 
-        b+x
-    return b
+featuresPrecomputed = {}
+forward = {}
 
 def features_for_one(X):
     if (tuple(X) in featuresPrecomputed.keys()): return featuresPrecomputed[tuple(X)]
 
-    # X[X==0]=-1
     X_new = np.copy(X)
     X_new = 1-2*X_new       # 0 to 1 and 1 to -1
 
@@ -53,8 +44,7 @@ def features_for_one(X):
     X_new = np.flip( np.cumprod( np.flip(X_new) ) )
     features = [ (X_new[i] if i != fl else 1) * (X_new[j] if j != fl else 1) * (X_new[k] if k != fl else 1) for i in range(fl+1) for j in range(i, fl+1) for k in range(j, fl+1)]
     
-    featuresPrecomputed[tuple(X)]=features
-    # forward[tuple(X)]=base2(X)
+    featuresPrecomputed[tuple(X)] = features
     return features
 
 ################################
@@ -72,8 +62,8 @@ def get_renamed_labels( y ):
     # If you use one mapping for train and another for test, you will get poor accuracy
     
     y_new = np.copy(y)
-    y_new[y_new==1]=1
-    y_new[y_new==0]= -1
+    y_new[y_new == 1] = 1
+    y_new[y_new == 0] = -1
     return y_new.reshape( ( y_new.size, ) )					# Reshape y_new as a vector
 
 
@@ -125,51 +115,29 @@ def solver( X, y, timeout, spacing ):
 
     # You may reinitialize W, B to your liking here e.g. set W to its correct dimensionality
     # You may also define new variables here e.g. step_length, mini-batch size etc
-    # W= np.zeros((int)(d*(d-1)*(d+1)/6 + d*(d+1) +d) + 1)
-    counter=0
-    X_new = get_features(X)
-    y_new = get_renamed_labels(y)
-
-    
-    # print((tm.perf_counter()- tic +0.0))
+    counter = 0
 
     C = 1e10
-    XY= np.concatenate((X, y.reshape((y.size,1))), axis=1)
-
-    # print((tm.perf_counter()- tic +0.0))
+    XY = np.concatenate((X, y.reshape((y.size,1))), axis=1)
 
     XY_unique = np.unique(XY, axis=0)
-    # print((tm.perf_counter()- tic +0.0))
-
-    # print(XY_unique.shape)
-    # X_unique = np.unique(X_new,axis=0)
-    # print(X_unique.shape[0])
-    isConsistent= 1 #(XY_unique.shape[0] == X_unique.shape[0])
-    # print(isConsistent)
     
-
-    
-    if(isConsistent):
-        indices= XY_unique.shape[0]
+    if (XY_unique.shape[0] == np.unique(X, axis=0).shape[0]) :      # Each input in train data has consistent output
+        indices = XY_unique.shape[0]
         perm = np.random.permutation(indices)
         X_f = get_features(XY_unique[: , :-1])
         y_f = get_renamed_labels( XY_unique[: , -1])
-        # print(y_f.shape)
     else:
-        C=100
-        indices=n
+        C = 100
+        indices = n
         perm = np.random.permutation(n)
-        X_f = X_new
-        y_f = y_new
-
+        X_f = get_features(X)
+        y_f = get_renamed_labels(y)
     
     alphas = np.random.randn(indices)
-    # print(len(alphas))
 
-    W_r=  np.sum ((X_f.T * (alphas.T * y_f).T ).T, axis=0)
-    W= 10*W_r
-    # print((tm.perf_counter()- tic +0.0))
-
+    W_r =  np.sum ((X_f.T * (alphas.T * y_f).T ).T, axis=0)
+    W = 10 * W_r
 
 ################################
 # Non Editable Region Starting #
@@ -205,12 +173,12 @@ def solver( X, y, timeout, spacing ):
         # This way, W, B will always store the averages and can be returned at any time
         # In this scheme, W, B play the role of the "cumulative" variables in the course module optLib (see the cs771 library)
         # W_run, B_run on the other hand, play the role of the "theta" variable in the course module optLib (see the cs771 library)
-        i=perm[counter]
+        i = perm[counter]
 
-        W_r,alphas[i]=optimCordinate(i, X_f, y_f,W_r, alphas,C)
-        W= 10*W_r
-        counter+=1
-        if(counter==indices):
-            counter=0
+        W_r, alphas[i] = optimCordinate(i, X_f, y_f, W_r, alphas, C)
+        W = 10 * W_r
+        counter += 1
+        if (counter == indices):
+            counter = 0
             perm = np.random.permutation(indices)
     return ( W.reshape( ( W.size, ) ), B, totTime )			# This return statement will never be reached
