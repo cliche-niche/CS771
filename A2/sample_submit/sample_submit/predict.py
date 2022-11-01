@@ -30,22 +30,16 @@ def get_top_k_preds(model_code,model,x,k):
 	Add your predictor function in this file
 	Then modify this function
 	Add the model_code to params.py"""
-
-	if(model_code == DT_TREE_CODE):
-		return DT_preds(model,x,k)
-	if(model_code ==  DL_CODE):
-		return DL_preds(model,x,k)
 	if(model_code == KUNWAR_CODE):
 		return Kunwar_preds(model,x,k)
 
 def Kunwar_preds(model,x,k, optional = None):
-    
 	clfrfc= model[0]
 	clfrfc2= model[1]
 	clfnn= model[2]
-	probs= clfrfc.predict_proba([x])
-	probsnn= clfnn.predict_proba([x])
-	probs2= clfrfc2.predict_proba([x])
+	probs= clfrfc.predict_proba(x)
+	probsnn= clfnn.predict_proba(x)
+	probs2= clfrfc2.predict_proba(x)
 
 	# Convert arrays to 1d arrays
 	probs= probs[0]
@@ -53,43 +47,27 @@ def Kunwar_preds(model,x,k, optional = None):
 	probs2= probs2[0]
 
 	all = deepcopy(probs)
-	al= probs.argsort()[-k:][::-1]
+	# al= probs.argsort()[-k:][::-1]
+	# print(al)
 	probs= probs*0.7+probsnn*0.3
-	al= probs.argsort()[-k:][::-1]
 	# al = np.reshape(al,(al.shape[1]))
 	# print(al.shape)
+	al= probs.argsort()[-k:][::-1]
 	for j in al:
 		probs[j]= (probs[j]*0.5+probsnn[j]*0.2)*3
 	yPred = probs.argsort()[-k:][::-1]
-	# all[1]=probs2[1]
-	# all[2]= probs2[2]
-	# # print(all.shape, probs.shape, probsnn.shape, probs2.shape)
-	# probs = probs + all*0.1
+	all[1]=probs2[1]
+	all[2]= probs2[2]
+	probs = probs + all*0.1
+	
+	yPred= probs.argsort()[-k:][::-1]
 	yPred=np.reshape(np.array(yPred), k)
 	# print(yPred)
 	le = model[3]
-	yPred = le.inverse_transform(yPred)
+	# yPred = le.inverse_transform(yPred)
 	# print(yPred)
 	return yPred
-def DL_preds(model,x,k):
-	"""Takes a DL model (tf.keras.models.Sequential). Predicts the top k classes """
-	# Divide x by its norm
-	x = x.toarray()
-	norm = np.linalg.norm(x)
-	x = x/norm
-	preds = model(x)
-	top_k = tf.math.top_k(preds,k)[-1]
-	return np.reshape(top_k,(top_k.shape[1]))	
 
-def DT_preds(model,x,k):
-	"""Takes a DT model (sklearn.tree.DecisionTreeClassfier). Predicts the top k classes """
-	y_pred = model.predict_proba(x)
-	probs = [-1]
-	for i in range(1,CLASSES + 1):
-		probs.append(1.0 - y_pred[i][0][0])
-	res = (sorted(range(len(probs)), key = lambda sub: probs[sub])[-k:])
-	res.reverse()
-	return np.array(res)
 
 def findErrorClass( X, k ):
 	# Find out how many data points we have
