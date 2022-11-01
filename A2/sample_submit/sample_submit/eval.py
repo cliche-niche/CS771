@@ -1,18 +1,13 @@
 from copyreg import pickle
-from params import *
 import utils
 import predict
 import time as tm
 import numpy as np
-from kunwar_utils import *
-import pickle
 # This file is intended to demonstrate how we would evaluate your code
 # The data loader needs to know how many feature dimensions are there
 dictSize = 225
 (X, y) = utils.loadData( "../../train", dictSize = dictSize )
-X = pickle.load(open("models/X_test.pkl", "rb"))
-y = pickle.load(open("models/y_test.pkl", "rb"))
-# Load X_test
+
 # Get error class predictions from predict.py and time the thing
 tic = tm.perf_counter()
 yPred = predict.findErrorClass( X, 5 )

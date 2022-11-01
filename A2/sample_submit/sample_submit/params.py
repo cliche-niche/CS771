@@ -1,9 +1,0 @@
-KUNWAR_CODE = 3
-CLASSES = 50
-dictSize = 225
-MODEL_PATH = "models/dl.zip"
-BATCH_SIZE = 1000
-EPOCHS = 250
-TRAIN_SET_SIZE = 8000
-DT_1_CLASSES = [1,2]
-k = 5

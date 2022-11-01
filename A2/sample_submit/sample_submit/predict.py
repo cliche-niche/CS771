@@ -1,9 +1,6 @@
 from copy import deepcopy
 import numpy as np
 from numpy import random as rand
-from joblib import load
-from params import *
-import tensorflow as tf
 import pickle
 # DO NOT CHANGE THE NAME OF THIS METHOD OR ITS INPUT OUTPUT BEHAVIOR
 
@@ -25,59 +22,44 @@ import pickle
 # Thus, the returned matrix will always be a dense matrix. The evaluation code may misbehave and give unexpected
 # results if an nd-array is not returned. Please be careful that classes are numbered from 1 to 50 and not 0 to 49.
 
-def get_top_k_preds(model_code,model,x,k):
-	"""Directs the call to the appropriate predictor function using the model_code. 
-	Add your predictor function in this file
-	Then modify this function
-	Add the model_code to params.py"""
-	if(model_code == KUNWAR_CODE):
-		return Kunwar_preds(model,x,k)
-
-def Kunwar_preds(model,x,k, optional = None):
-	clfrfc= model[0]
-	clfrfc2= model[1]
-	clfnn= model[2]
-	probs= clfrfc.predict_proba(x)
-	probsnn= clfnn.predict_proba(x)
-	probs2= clfrfc2.predict_proba(x)
-
-	# Convert arrays to 1d arrays
-	probs= probs[0]
-	probsnn= probsnn[0]
-	probs2= probs2[0]
-
-	all = deepcopy(probs)
-	# al= probs.argsort()[-k:][::-1]
-	# print(al)
-	probs= probs*0.7+probsnn*0.3
-	# al = np.reshape(al,(al.shape[1]))
-	# print(al.shape)
-	al= probs.argsort()[-k:][::-1]
-	for j in al:
-		probs[j]= (probs[j]*0.5+probsnn[j]*0.2)*3
-	yPred = probs.argsort()[-k:][::-1]
-	all[1]=probs2[1]
-	all[2]= probs2[2]
-	probs = probs + all*0.1
-	
-	yPred= probs.argsort()[-k:][::-1]
-	yPred=np.reshape(np.array(yPred), k)
-	# print(yPred)
-	le = model[3]
-	# yPred = le.inverse_transform(yPred)
-	# print(yPred)
-	return yPred
-
 
 def findErrorClass( X, k ):
 	# Find out how many data points we have
 	n = X.shape[0]
-	print(n)
 	# Load and unpack a dummy model to see an example of how to make predictions
 	# The dummy model simply stores the error classes in decreasing order of their popularity
 	model = [pickle.load(open('models/rfc.pkl', 'rb')),pickle.load(open('models/rfc2.pkl', 'rb')),pickle.load(open('models/nn.pkl', 'rb')), pickle.load(open('models/le.pkl', 'rb'))]
-	y_pred = []
-	for j in range(n):
-		features = np.reshape(X[j], (1, X[j].shape[0]))
-		y_pred.append(get_top_k_preds(KUNWAR_CODE,model, features,k))
-	return np.array(y_pred)
+	# npzModel = np.load( "model.npz" )
+	# model = npzModel[npzModel.files[0]]
+	# Let us predict a random subset of the 2k most popular labels no matter what the test point
+	# shortList = model[0:2*k]
+	clfrfc= model[0]
+	clfrfc2= model[1]
+	clfnn= model[2]
+	probs= clfrfc.predict_proba(X)
+	probsnn= clfnn.predict_proba(X)
+	probs2= clfrfc2.predict_proba(X)
+	all = deepcopy(probs)
+	all[:,1]=probs2[:,1]
+	all[:,2]= probs2[:,2]
+	probs= probs*0.7+probsnn*0.3
+	
+
+
+
+	# Make sure we are returning a numpy nd-array and not a numpy matrix or a scipy sparse matrix
+	yPred = np.zeros( (n, k) )
+	for i in range( n ):
+
+		al= probs[i].argsort()[-k:][::-1]
+		for j in al:
+			probs[j]= (probs[j]*0.5+probsnn[j]*0.2)*3
+		
+		probs[i] = probs[i] + all[i]*0.1
+		al= probs[i].argsort()[-k:][::-1]
+		al=np.reshape(np.array(al), k)
+		# print(yPred)
+		le = model[3]
+		# print (yPred)
+		yPred[i] = le.inverse_transform(al)
+	return yPred

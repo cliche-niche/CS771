@@ -3,13 +3,13 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import utils
 from sklearn.neural_network import MLPClassifier
-from params import *
 from xgboost import XGBClassifier
 
 
 def train_test_split_encode(X, y, test_size=0.2, random_state=1):
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    X_train, X_test, y_train, y_test = X, X, y, y
     le = LabelEncoder()
     y_train = le.fit_transform(y_train)
     y_test = le.transform(y_test)
