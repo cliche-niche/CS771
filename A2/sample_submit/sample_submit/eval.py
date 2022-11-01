@@ -10,8 +10,8 @@ import pickle
 # The data loader needs to know how many feature dimensions are there
 dictSize = 225
 (X, y) = utils.loadData( "../../train", dictSize = dictSize )
-X = pickle.load(open("X_test.pkl", "rb"))
-y = pickle.load(open("y_test.pkl", "rb"))
+X = pickle.load(open("models/X_test.pkl", "rb"))
+y = pickle.load(open("models/y_test.pkl", "rb"))
 # Load X_test
 # Get error class predictions from predict.py and time the thing
 tic = tm.perf_counter()

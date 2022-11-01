@@ -75,7 +75,7 @@ def findErrorClass( X, k ):
 	print(n)
 	# Load and unpack a dummy model to see an example of how to make predictions
 	# The dummy model simply stores the error classes in decreasing order of their popularity
-	model = [pickle.load(open('rfc.pkl', 'rb')),pickle.load(open('rfc2.pkl', 'rb')),pickle.load(open('nn.pkl', 'rb')), pickle.load(open('le.pkl', 'rb'))]
+	model = [pickle.load(open('models/rfc.pkl', 'rb')),pickle.load(open('models/rfc2.pkl', 'rb')),pickle.load(open('models/nn.pkl', 'rb')), pickle.load(open('models/le.pkl', 'rb'))]
 	y_pred = []
 	for j in range(n):
 		features = np.reshape(X[j], (1, X[j].shape[0]))
