@@ -543,96 +543,96 @@ from sklearn.neural_network import MLPClassifier
 # clfrfc2= XGBClassifier()
 # clfnn = MLPClassifier()
 
-# # clfrfc.fit(X_train, y_train, sample_weight=classes_weights)
-# # clfrfc2.fit(X_train, ynew, sample_weight=classes_weights2)
-# # clfnn.fit(X_train, y_train)
+# clfrfc.fit(X_train, y_train, sample_weight=classes_weights)
+# clfrfc2.fit(X_train, ynew, sample_weight=classes_weights2)
+# clfnn.fit(X_train, y_train)
 
-# import pickle
-# # pickle.dump(clfrfc, open('rfc.pkl', 'wb'))
-# # pickle.dump(clfrfc2, open('rfc2.pkl', 'wb'))
-# # pickle.dump(clfnn, open('nn.pkl', 'wb'))
+import pickle
+# pickle.dump(clfrfc, open('rfc.pkl', 'wb'))
+# pickle.dump(clfrfc2, open('rfc2.pkl', 'wb'))
+# pickle.dump(clfnn, open('nn.pkl', 'wb'))
 
-# clfrfc= pickle.load(open('rfc.pkl', 'rb'))
-# clfrfc2= pickle.load(open('rfc2.pkl', 'rb'))
-# clfnn= pickle.load(open('nn.pkl', 'rb'))
+clfrfc= pickle.load(open('rfc.pkl', 'rb'))
+clfrfc2= pickle.load(open('rfc2.pkl', 'rb'))
+clfnn= pickle.load(open('nn.pkl', 'rb'))
 
 
-# probs= clfrfc.predict_proba(X_test)
-# probsnn= clfnn.predict_proba(X_test)
-# probs2= clfrfc2.predict_proba(X_test)
-# # probsmax2= clfmax2.predict_proba(X_test)
-# # predsmax= clfmax.predict(X_test)
-# # predsmax2= clfmax2.predict(X_test)
+probs= clfrfc.predict_proba(X_test)
+probsnn= clfnn.predict_proba(X_test)
+probs2= clfrfc2.predict_proba(X_test)
+# probsmax2= clfmax2.predict_proba(X_test)
+# predsmax= clfmax.predict(X_test)
+# predsmax2= clfmax2.predict(X_test)
 
-# # probmaxf=[]
-# # for i in range (X_test.shape[0]):
-# #     a1=(probs[i] + probsnn[i])/2
-# #     # else:
-# #     a2= [0, probsmax[i][1],probsmax[i][2],0] + [0]* (43)
-# #     a2+= (probs[i] + probsnn[i])/2
-# #     a2[1]-=a1[1]
-# #     a2[2]-=a1[2]
-# #     probmaxf.append(a2)
-# # probsmaxf=np.array(probmaxf)
-# # print(clfrfc2.score (X_test, yt))
-# # print(X_test.shape)
-# # print(np.sum(clfrfc2.predict(X_test)==yt))
-# # for i in range (X_test.shape[0]):
-# #     if(clfrfc2.predict(X_test)[i]==yt[i]):
-# #         print(i, clfrfc2.predict(X_test)[i], yt[i], probs2[i])
-# yPred=[]
-# yPred1=[]
-# yPred2=[]
-# yPred3=[]
-# yPred4=[]
-# all = deepcopy(probs)
+# probmaxf=[]
 # for i in range (X_test.shape[0]):
-#     al= probs[i].argsort()[-5:][::-1]
+#     a1=(probs[i] + probsnn[i])/2
+#     # else:
+#     a2= [0, probsmax[i][1],probsmax[i][2],0] + [0]* (43)
+#     a2+= (probs[i] + probsnn[i])/2
+#     a2[1]-=a1[1]
+#     a2[2]-=a1[2]
+#     probmaxf.append(a2)
+# probsmaxf=np.array(probmaxf)
+# print(clfrfc2.score (X_test, yt))
+# print(X_test.shape)
+# print(np.sum(clfrfc2.predict(X_test)==yt))
+# for i in range (X_test.shape[0]):
+#     if(clfrfc2.predict(X_test)[i]==yt[i]):
+#         print(i, clfrfc2.predict(X_test)[i], yt[i], probs2[i])
+yPred=[]
+yPred1=[]
+yPred2=[]
+yPred3=[]
+yPred4=[]
+all = deepcopy(probs)
+for i in range (X_test.shape[0]):
+    al= probs[i].argsort()[-5:][::-1]
 
-#     a2= probsnn[i].argsort()[-5:][::-1]
-#     a3= probs2[i].argsort()[-5:][::-1]
-#     yPred1.append(al)
-#     yPred2.append(a2)
-#     # yPred3.append(a3)
-#     # print(probsmax.shape)
-#     # probsmax[i]= [0, probsmax[i][1], probsmax[i][2]] + [0]*(probsmax.shape[1]-3)
-#     # all= [,probs2[i][1], probs2[i][2],0] + [0]* (43)
-#     probs[i]= probs[i]*0.7+probsnn[i]*0.3
+    a2= probsnn[i].argsort()[-5:][::-1]
+    a3= probs2[i].argsort()[-5:][::-1]
+    yPred1.append(al)
+    yPred2.append(a2)
+    # yPred3.append(a3)
+    # print(probsmax.shape)
+    # probsmax[i]= [0, probsmax[i][1], probsmax[i][2]] + [0]*(probsmax.shape[1]-3)
+    # all= [,probs2[i][1], probs2[i][2],0] + [0]* (43)
+    probs[i]= probs[i]*0.7+probsnn[i]*0.3
     
-#     al= probs[i].argsort()[-5:][::-1]
-#     for x in al:
-#         probs[i][x]= (probs[i][x]*0.5+probsnn[i][x]*0.2)*3
-#         # print(probs2[i].shape)
-#     # all[i]= probs[i]*0.5+probsnn[i]*0.5
+    al= probs[i].argsort()[-5:][::-1]
+    for x in al:
+        probs[i][x]= (probs[i][x]*0.5+probsnn[i][x]*0.2)*3
+        # print(probs2[i].shape)
+    # all[i]= probs[i]*0.5+probsnn[i]*0.5
 
-#     # all= deepcopy(probs[i])
+    # all= deepcopy(probs[i])
     
     
-#     # for x in range(probs[i].shape[0]):
-#     #     probs[i][x]= probs[i][x]**2+ probsnn[i][x]**2
+    # for x in range(probs[i].shape[0]):
+    #     probs[i][x]= probs[i][x]**2+ probsnn[i][x]**2
 
 
-#         # if(len(al)==5): break
-#     yPred.append( probs[i].argsort()[-5:][::-1])
-#     # probs[i]= probs[i]+  all[i]*0.5 + probsnn[2]*0.2
+        # if(len(al)==5): break
+    yPred.append( probs[i].argsort()[-5:][::-1])
+    # probs[i]= probs[i]+  all[i]*0.5 + probsnn[2]*0.2
 
-#     all[i][1]=probs2[i][1]
-#     all[i][2]= probs2[i][2]
+    all[i][1]=probs2[i][1]
+    all[i][2]= probs2[i][2]
 
-#     probs[i] = probs[i] + all[i]*0.1
-#     yPred4.append( probs[i].argsort()[-5:][::-1])
+    probs[i] = probs[i] + all[i]*0.1
+    yPred4.append( probs[i].argsort()[-5:][::-1])
 
-#     # np.argpartition(probs[i], -5)[-5:])
-# yPred=np.reshape(np.array(yPred), (len(yPred), 5))
+    # np.argpartition(probs[i], -5)[-5:])
+yPred=np.reshape(np.array(yPred), (len(yPred), 5))
+getPrec(c=5)
+yPred=np.reshape(np.array(yPred1), (len(yPred1), 5))
+getPrec(c=5)
+yPred=np.reshape(np.array(yPred2), (len(yPred2), 5))
+getPrec(c=5)
+# yPred=np.reshape(np.array(yPred3), (len(yPred3), 5))
 # getPrec(c=5)
-# yPred=np.reshape(np.array(yPred1), (len(yPred1), 5))
-# getPrec(c=5)
-# yPred=np.reshape(np.array(yPred2), (len(yPred2), 5))
-# getPrec(c=5)
-# # yPred=np.reshape(np.array(yPred3), (len(yPred3), 5))
-# # getPrec(c=5)
-# yPred=np.reshape(np.array(yPred4), (len(yPred4), 5))
-# getPrec(c=5)
+yPred=np.reshape(np.array(yPred4), (len(yPred4), 5))
+getPrec(c=5)
 
 # # yPred =np.reshape(clfrfc.predict(X_test), (X_test.shape[0],1))
 # # print('rfc')
@@ -680,56 +680,56 @@ from sklearn.neural_network import MLPClassifier
 # # print( "Total time taken is %.6f seconds " % (toc - tic) )
 
 
-from sklearn.utils import class_weight
+# from sklearn.utils import class_weight
 
-# classifiers={}
-import pickle
-# pickle.dump(classifiers, open('classifiers1v1.pkl', 'wb'))
-classifiers= pickle.load(open('classifiers1v1.pkl', 'rb'))
-
-for i in range (counts.shape[0]):
-    ynew = list(deepcopy(y_train))
-    for x in range (len(ynew)):
-        if(ynew[x]!=i):
-            ynew[x]= 0
-        else:
-            ynew[x]= 1
-    ynew= np.array(ynew)
-    # print(classifiers[i].score (X_test, ynew), (np.sum(ynew)),(np.sum(classifiers[i].predict(X_test))), np.sum(classifiers[i].predict(X_test)==ynew))
-    # print(ynew)
-    classes_weights = class_weight.compute_sample_weight(
-    class_weight='balanced',
-    y=ynew
-    )
-    xx= MLPClassifier()
-    xx.fit(X_train, ynew)
-
-    classifiers[i]= xx
-    
-    ynew = list(deepcopy(y_test))
-    for x in range (len(ynew)):
-        if(ynew[x]!=i):
-            ynew[x]= 0
-        else:
-            ynew[x]= 1
-    ynew= np.array(ynew)
-    print(classifiers[i].score (X_test, ynew), (np.sum(ynew)),(np.sum(classifiers[i].predict(X_test))), np.sum(classifiers[i].predict(X_test)==ynew))
-    # print(i)
-import pickle
-pickle.dump(classifiers, open('classifiers1v1vn.pkl', 'wb'))
+# # classifiers={}
+# import pickle
+# # pickle.dump(classifiers, open('classifiers1v1.pkl', 'wb'))
 # classifiers= pickle.load(open('classifiers1v1.pkl', 'rb'))
 
-def getProb(a):
-    prob= np.zeros(counts.shape[0])
-    for i in range (counts.shape[0]):
-        prob[i]= classifiers[i].predict_proba([a])[0][1]
-    return prob
-yPred=[]
-for i in range (X_test.shape[0]):
+# for i in range (counts.shape[0]):
+#     ynew = list(deepcopy(y_train))
+#     for x in range (len(ynew)):
+#         if(ynew[x]!=i):
+#             ynew[x]= 0
+#         else:
+#             ynew[x]= 1
+#     ynew= np.array(ynew)
+#     # print(classifiers[i].score (X_test, ynew), (np.sum(ynew)),(np.sum(classifiers[i].predict(X_test))), np.sum(classifiers[i].predict(X_test)==ynew))
+#     # print(ynew)
+#     classes_weights = class_weight.compute_sample_weight(
+#     class_weight='balanced',
+#     y=ynew
+#     )
+#     xx= MLPClassifier()
+#     xx.fit(X_train, ynew)
 
-# yPred4.append( probs[i].argsort()[-5:][::-1])
-    yPred.append(getProb(X_test[i]).argsort()[-5:][::-1])
-    # print(i)
-yPred=np.reshape(np.array(yPred), (len(yPred), 5))
-getPrec(c=5)
+#     classifiers[i]= xx
+    
+#     ynew = list(deepcopy(y_test))
+#     for x in range (len(ynew)):
+#         if(ynew[x]!=i):
+#             ynew[x]= 0
+#         else:
+#             ynew[x]= 1
+#     ynew= np.array(ynew)
+#     print(classifiers[i].score (X_test, ynew), (np.sum(ynew)),(np.sum(classifiers[i].predict(X_test))), np.sum(classifiers[i].predict(X_test)==ynew))
+#     # print(i)
+# import pickle
+# pickle.dump(classifiers, open('classifiers1v1vn.pkl', 'wb'))
+# # classifiers= pickle.load(open('classifiers1v1.pkl', 'rb'))
+
+# def getProb(a):
+#     prob= np.zeros(counts.shape[0])
+#     for i in range (counts.shape[0]):
+#         prob[i]= classifiers[i].predict_proba([a])[0][1]
+#     return prob
+# yPred=[]
+# for i in range (X_test.shape[0]):
+
+# # yPred4.append( probs[i].argsort()[-5:][::-1])
+#     yPred.append(getProb(X_test[i]).argsort()[-5:][::-1])
+#     # print(i)
+# yPred=np.reshape(np.array(yPred), (len(yPred), 5))
+# getPrec(c=5)
 
